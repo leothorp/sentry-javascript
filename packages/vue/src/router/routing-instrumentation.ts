@@ -1,10 +1,12 @@
-import { WINDOW, captureException } from '@sentry/browser';
-import { SEMANTIC_ATTRIBUTE_SENTRY_SOURCE, spanToJSON } from '@sentry/core';
+import { WINDOW } from '@sentry/browser';
+import { SEMANTIC_ATTRIBUTE_SENTRY_SOURCE, captureException, spanToJSON } from '@sentry/core';
 import type { Transaction, TransactionContext, TransactionSource } from '@sentry/types';
 
-import { getActiveTransaction } from './tracing';
+import { getActiveTransaction } from '../tracing';
+import { DEFAULT_VUE_ROUTER_TAGS } from './constants';
+import type { VueRouter } from './types';
 
-interface VueRouterInstrumationOptions {
+export interface VueRouterInstrumentationOptions {
   /**
    * What to use for route labels.
    * By default, we use route.name (if set) and else the path.
@@ -20,29 +22,6 @@ export type VueRouterInstrumentation = <T extends Transaction>(
   startTransactionOnLocationChange?: boolean,
 ) => void;
 
-// The following type is an intersection of the Route type from VueRouter v2, v3, and v4.
-// This is not great, but kinda necessary to make it work with all versions at the same time.
-export type Route = {
-  /** Unparameterized URL */
-  path: string;
-  /**
-   * Query params (keys map to null when there is no value associated, e.g. "?foo" and to an array when there are
-   * multiple query params that have the same key, e.g. "?foo&foo=bar")
-   */
-  query: Record<string, string | null | (string | null)[]>;
-  /** Route name (VueRouter provides a way to give routes individual names) */
-  name?: string | symbol | null | undefined;
-  /** Evaluated parameters */
-  params: Record<string, string | string[]>;
-  /** All the matched route objects as defined in VueRouter constructor */
-  matched: { path: string }[];
-};
-
-interface VueRouter {
-  onError: (fn: (err: Error) => void) => void;
-  beforeEach: (fn: (to: Route, from: Route, next?: () => void) => void) => void;
-}
-
 /**
  * Creates routing instrumentation for Vue Router v2, v3 and v4
  *
@@ -53,17 +32,13 @@ interface VueRouter {
  */
 export function vueRouterInstrumentation(
   router: VueRouter,
-  options: Partial<VueRouterInstrumationOptions> = {},
+  options: Partial<VueRouterInstrumentationOptions> = {},
 ): VueRouterInstrumentation {
   return (
     startTransaction: (context: TransactionContext) => Transaction | undefined,
     startTransactionOnPageLoad: boolean = true,
     startTransactionOnLocationChange: boolean = true,
   ) => {
-    const tags = {
-      'routing.instrumentation': 'vue-router',
-    };
-
     // We have to start the pageload transaction as early as possible (before the router's `beforeEach` hook
     // is called) to not miss child spans of the pageload.
     // We check that window & window.location exists in order to not run this code in SSR environments.
@@ -72,7 +47,7 @@ export function vueRouterInstrumentation(
         name: WINDOW.location.pathname,
         op: 'pageload',
         origin: 'auto.pageload.vue',
-        tags,
+        tags: DEFAULT_VUE_ROUTER_TAGS,
         data: {
           [SEMANTIC_ATTRIBUTE_SENTRY_SOURCE]: 'url',
         },
@@ -131,7 +106,7 @@ export function vueRouterInstrumentation(
           name: transactionName,
           op: 'navigation',
           origin: 'auto.navigation.vue',
-          tags,
+          tags: DEFAULT_VUE_ROUTER_TAGS,
           data,
         });
       }

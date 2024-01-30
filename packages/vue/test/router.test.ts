@@ -3,7 +3,7 @@ import { SEMANTIC_ATTRIBUTE_SENTRY_SOURCE } from '@sentry/core';
 import type { Transaction } from '@sentry/types';
 
 import { vueRouterInstrumentation } from '../src';
-import type { Route } from '../src/router';
+import type { Route } from '../src/router/types';
 import * as vueTracing from '../src/tracing';
 
 const captureExceptionSpy = jest.spyOn(SentryBrowser, 'captureException');
