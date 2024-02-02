@@ -53,7 +53,6 @@ export {
   // eslint-disable-next-line deprecation/deprecation
   spanStatusfromHttpCode,
   getSpanStatusFromHttpCode,
-  setHttpStatus,
   // eslint-disable-next-line deprecation/deprecation
   trace,
   withScope,
