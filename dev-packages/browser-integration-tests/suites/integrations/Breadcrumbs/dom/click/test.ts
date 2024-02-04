@@ -76,8 +76,8 @@ sentryTest(
 
     const promise = getFirstSentryEnvelopeRequest<Event>(page);
 
-    await page.goto(url);
-    await page.locator('#annotated-button').click();
+    await Promise.all([page.goto(url), page.locator('#annotated-button').click()]);
+
     await page.evaluate('Sentry.captureException("test exception")');
 
     const eventData = await promise;
