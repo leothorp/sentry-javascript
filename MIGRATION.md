@@ -13,7 +13,8 @@ http://docs.sentry.io/platforms/javascript/configuration/transports/#offline-cac
 
 ## Removal of `Sentry.configureScope`.
 
-The top level `Sentry.configureScope` function has been removed. Instead, you should use the `Sentry.getCurrentScope()` to access and mutate the current scope.
+The top level `Sentry.configureScope` function has been removed. Instead, you should use the `Sentry.getCurrentScope()`
+to access and mutate the current scope.
 
 ## Other changes
 
