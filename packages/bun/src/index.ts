@@ -92,8 +92,6 @@ export {
   // eslint-disable-next-line deprecation/deprecation
   deepReadDirSync,
   // eslint-disable-next-line deprecation/deprecation
-  enableAnrDetection,
-  // eslint-disable-next-line deprecation/deprecation
   getModuleFromFilename,
   DEFAULT_USER_INCLUDES,
   autoDiscoverNodePerformanceMonitoringIntegrations,
