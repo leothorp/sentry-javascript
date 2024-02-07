@@ -105,14 +105,6 @@ export function lastEventId(): string | undefined {
   return getCurrentScope().lastEventId();
 }
 
-/**
- * Configure the current scope.
- * @deprecated Use `getCurrentScope()` instead.
- */
-export function configureScope(callback: (scope: Scope) => void): void {
-  callback(getCurrentScope());
-}
-
 /** Record an exception and send it to Sentry. */
 export function captureException(exception: unknown, hint?: ExclusiveEventHintOrCaptureContext): string {
   return getCurrentScope().captureException(exception, parseEventHintOrCaptureContext(hint));

@@ -11,6 +11,10 @@ enum. If you were using the `Severity` enum, you should replace it with the `Sev
 The `Offline` integration has been removed in favor of the offline transport wrapper:
 http://docs.sentry.io/platforms/javascript/configuration/transports/#offline-caching
 
+## Removal of `Sentry.configureScope`.
+
+The top level `Sentry.configureScope` function has been removed. Instead, you should use the `Sentry.getCurrentScope()` to access and mutate the current scope.
+
 ## Other changes
 
 - Remove `spanStatusfromHttpCode` in favour of `getSpanStatusFromHttpCode` (#10361)
