@@ -92,8 +92,6 @@ export {
   getModuleFromFilename,
   createGetModuleFromFilename,
   metrics,
-  // eslint-disable-next-line deprecation/deprecation
-  extractTraceparentData,
   runWithAsyncContext,
   consoleIntegration,
   onUncaughtExceptionIntegration,

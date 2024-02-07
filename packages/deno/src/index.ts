@@ -32,8 +32,6 @@ export {
   // eslint-disable-next-line deprecation/deprecation
   configureScope,
   createTransport,
-  // eslint-disable-next-line deprecation/deprecation
-  extractTraceparentData,
   continueTrace,
   flush,
   // eslint-disable-next-line deprecation/deprecation
