@@ -11,6 +11,17 @@ enum. If you were using the `Severity` enum, you should replace it with the `Sev
 The `Offline` integration has been removed in favor of the offline transport wrapper:
 http://docs.sentry.io/platforms/javascript/configuration/transports/#offline-caching
 
+## Removal of the `Transaction` integration
+
+The `Transaction` integration has been removed.
+
+## Other Changes
+
+- The minumum supported Node version for all the SDK packages is Node 14
+- `extraErrorDataIntegration` now looks at
+  [`error.cause`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/cause) by
+  default.
+
 # Deprecations in 7.x
 
 You can use the **Experimental** [@sentry/migr8](https://www.npmjs.com/package/@sentry/migr8) to automatically update
