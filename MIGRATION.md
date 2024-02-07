@@ -11,6 +11,10 @@ enum. If you were using the `Severity` enum, you should replace it with the `Sev
 The `Offline` integration has been removed in favor of the offline transport wrapper:
 http://docs.sentry.io/platforms/javascript/configuration/transports/#offline-caching
 
+## Removal of `enableAnrDetection` and `Anr` class
+
+The `enableAnrDetection` and `Anr` class have been removed. See the [docs](https://docs.sentry.io/platforms/node/configuration/application-not-responding/) for more details how to migrate to `anrIntegration`, the new integration for ANR detection.
+
 # Deprecations in 7.x
 
 You can use the **Experimental** [@sentry/migr8](https://www.npmjs.com/package/@sentry/migr8) to automatically update
