@@ -14,7 +14,9 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {},
-  "devDependencies": {},
+  "devDependencies": {
+    "yaml": "2.3.4"
+  },
   "volta": {
     "extends": "../../package.json"
   }

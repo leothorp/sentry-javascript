@@ -3,15 +3,16 @@ import type { JobStep } from '../../types';
 const ACTION = 'actions/checkout@v4' as const;
 
 interface ActionCheckOutStepOptions {
+  name?: string;
   fetchDepth?: number;
 }
 
 /**
  * Wrapper around the `actions/checkout` action to check out the current commit.
  */
-export function getActionCheckoutStep({ fetchDepth }: ActionCheckOutStepOptions): ActionCheckoutStep {
+export function getActionCheckoutStep({ name, fetchDepth }: ActionCheckOutStepOptions = {}): ActionCheckoutStep {
   const step: ActionCheckoutStep = {
-    name: 'Check out current commit',
+    name: name || 'Check out current commit',
     uses: ACTION,
     with: {
       ref: '${{ env.HEAD_COMMIT }}',

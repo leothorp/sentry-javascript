@@ -1,11 +1,82 @@
 import type { NormalJob } from '../schema/types';
+import { MachineType } from './machines';
 import { getActionCheckoutStep } from './steps/action-checkout';
 import { getPathsFilterStep } from './steps/paths-filter';
 import { generateMultilineString } from './utils';
 
+export const pathFilterStep = getPathsFilterStep({
+  filters: {
+    workflow: {
+      alias: true,
+      paths: ['.github/**'],
+    },
+    shared: {
+      alias: true,
+      paths: [
+        '*workflow',
+        '*.{js,ts,json,yml,lock}',
+        'CHANGELOG.md',
+        'jest/**',
+        'scripts/**',
+        'packages/core/**',
+        'packages/rollup-utils/**',
+        'packages/tracing/**',
+        'packages/tracing-internal/**',
+        'packages/utils/**',
+        'packages/types/**',
+        'packages/integrations/**',
+      ],
+    },
+    browser: {
+      alias: true,
+      paths: [
+        '*shared',
+        'packages/browser/**',
+        'packages/replay/**',
+        'packages/replay-canvas/**',
+        'packages/feedback/**',
+        'packages/wasm/**',
+      ],
+    },
+    browser_integration: {
+      paths: ['*shared', '*browser', 'dev-packages/browser-integration-tests/**'],
+    },
+    ember: {
+      paths: ['*shared', '*browser', 'packages/ember/**'],
+    },
+    node: {
+      paths: ['*shared', 'packages/node/**', 'packages/node-experimental/**', 'dev-packages/node-integration-tests/**'],
+    },
+    nextjs: {
+      paths: ['*shared', '*browser', 'packages/nextjs/**', 'packages/node/**', 'packages/react/**'],
+    },
+    remix: {
+      paths: ['*shared', '*browser', 'packages/remix/**', 'packages/node/**', 'packages/react/**'],
+    },
+    profiling_node: {
+      paths: [
+        '*shared',
+        'packages/node/**',
+        'packages/node-experimental/**',
+        'packages/profiling-node/**',
+        'dev-packages/e2e-tests/test-applications/node-profiling/**',
+      ],
+    },
+    profiling_node_bindings: {
+      paths: ['*workflow', 'packages/profiling-node/**', 'dev-packages/e2e-tests/test-applications/node-profiling/**'],
+    },
+    deno: {
+      paths: ['*shared', '*browser', 'packages/deno/**'],
+    },
+    any_code: {
+      paths: ['!**/*.md'],
+    },
+  },
+});
+
 export const getMetadataJob: NormalJob = {
   name: 'Get Metadata',
-  'runs-on': 'ubuntu-20.04',
+  'runs-on': MachineType.Ubuntu_20_04,
   permissions: {
     'pull-requests': 'read',
   },
@@ -22,39 +93,7 @@ export const getMetadataJob: NormalJob = {
         'echo "COMMIT_MESSAGE=$(git log -n 1 --pretty=format:%s $COMMIT_SHA)" >> $GITHUB_ENV',
       ]),
     },
-    getPathsFilterStep({
-      filters: {
-        workflow: {
-          alias: true,
-          paths: ['.github/**'],
-        },
-        shared: {
-          alias: true,
-          paths: [
-            '*.{js,ts,json,yml,lock}',
-            'CHANGELOG.md',
-            'jest/**',
-            'scripts/**',
-            'packages/core/**',
-            'packages/rollup-utils/**',
-            'packages/tracing/**',
-            'packages/tracing-internal/**',
-            'packages/utils/**',
-            'packages/types/**',
-            'packages/integrations/**',
-          ],
-        },
-      },
-    }),
-    {
-      name: 'Determine changed packages',
-      uses: 'dorny/paths-filter@v3.0.0',
-      id: 'changed',
-      with: {
-        filters:
-          "workflow: &workflow\n  - '.github/**'\nshared: &shared\n  - *workflow\n  - '*.{js,ts,json,yml,lock}'\n  - 'CHANGELOG.md'\n  - 'jest/**'\n  - 'scripts/**'\n  - 'packages/core/**'\n  - 'packages/rollup-utils/**'\n  - 'packages/tracing/**'\n  - 'packages/tracing-internal/**'\n  - 'packages/utils/**'\n  - 'packages/types/**'\n  - 'packages/integrations/**'\nbrowser: &browser\n  - *shared\n  - 'packages/browser/**'\n  - 'packages/replay/**'\n  - 'packages/replay-canvas/**'\n  - 'packages/feedback/**'\n  - 'packages/wasm/**'\nbrowser_integration:\n  - *shared\n  - *browser\n  - 'dev-packages/browser-integration-tests/**'\nember:\n  - *shared\n  - *browser\n  - 'packages/ember/**'\nnode:\n  - *shared\n  - 'packages/node/**'\n  - 'packages/node-experimental/**'\n  - 'dev-packages/node-integration-tests/**'\nnextjs:\n  - *shared\n  - *browser\n  - 'packages/nextjs/**'\n  - 'packages/node/**'\n  - 'packages/react/**'\nremix:\n  - *shared\n  - *browser\n  - 'packages/remix/**'\n  - 'packages/node/**'\n  - 'packages/react/**'\nprofiling_node:\n  - *shared\n  - 'packages/node/**'\n  - 'packages/node-experimental/**'\n  - 'packages/profiling-node/**'\n  - 'dev-packages/e2e-tests/test-applications/node-profiling/**'\nprofiling_node_bindings:\n  - *workflow\n  - 'packages/profiling-node/**'\n  - 'dev-packages/e2e-tests/test-applications/node-profiling/**'\ndeno:\n  - *shared\n  - *browser\n  - 'packages/deno/**'\nany_code:\n  - '!**/*.md'\n",
-      },
-    },
+    pathFilterStep,
     {
       name: 'Get PR labels',
       id: 'pr-labels',

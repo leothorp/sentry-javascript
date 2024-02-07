@@ -1,177 +1,39 @@
-// import { getMetadataJob } from './jobs/getMetadata';
-// import type { Workflow } from './schema/types';
+import type { Workflow } from './schema/types';
 
-// const jobs = {
-//   job_get_metadata: getMetadataJob,
-// } satisfies Workflow['jobs'];
+import { env } from './env';
+import { jobs } from './jobs';
 
-export const test = 123;
-
-// export const workflow = {
-//   name: 'Build & Test',
-//   on: {
-//     push: {
-//       branches: ['develop', 'master', 'release/**'],
-//     },
-//     pull_request: null,
-//     workflow_dispatch: {
-//       inputs: {
-//         commit: {
-//           description: "If the commit you want to test isn't the head of a branch, provide its SHA here",
-//           required: false,
-//         },
-//       },
-//     },
-//     schedule: [
-//       {
-//         cron: '0 0 * * *',
-//       },
-//     ],
-//   },
-//   concurrency: {
-//     group: '${{ github.workflow }}-${{ github.head_ref || github.run_id }}',
-//     'cancel-in-progress': true,
-//   },
-//   env: {
-//     HEAD_COMMIT: '${{ github.event.inputs.commit || github.sha }}',
-//     CACHED_DEPENDENCY_PATHS:
-//       '${{ github.workspace }}/node_modules\n${{ github.workspace }}/packages/*/node_modules\n${{ github.workspace }}/dev-packages/*/node_modules\n~/.cache/ms-playwright/\n~/.cache/mongodb-binaries/\n',
-//     CACHED_BUILD_PATHS:
-//       '${{ github.workspace }}/dev-packages/*/build\n${{ github.workspace }}/packages/*/build\n${{ github.workspace }}/packages/ember/*.d.ts\n${{ github.workspace }}/packages/gatsby/*.d.ts\n${{ github.workspace }}/packages/core/src/version.ts\n${{ github.workspace }}/packages/serverless\n${{ github.workspace }}/packages/utils/cjs\n${{ github.workspace }}/packages/utils/esm\n',
-//     BUILD_CACHE_KEY: '${{ github.event.inputs.commit || github.sha }}',
-//     BUILD_PROFILING_NODE_CACHE_TARBALL_KEY: 'profiling-node-tarball-${{ github.event.inputs.commit || github.sha }}',
-//     NX_CACHE_RESTORE_KEYS:
-//       'nx-Linux-${{ github.ref }}-${{ github.event.inputs.commit || github.sha }}\nnx-Linux-${{ github.ref }}\nnx-Linux\n',
-//   },
-//   jobs,
-// } satisfies Workflow;
+export const workflow = {
+  name: 'Build & Test',
+  on: {
+    push: {
+      branches: ['develop', 'master', 'release/**'],
+    },
+    pull_request: null,
+    workflow_dispatch: {
+      inputs: {
+        commit: {
+          description: "If the commit you want to test isn't the head of a branch, provide its SHA here",
+          required: false,
+        },
+      },
+    },
+    schedule: [
+      {
+        cron: '0 0 * * *',
+      },
+    ],
+  },
+  concurrency: {
+    group: '${{ github.workflow }}-${{ github.head_ref || github.run_id }}',
+    'cancel-in-progress': true,
+  },
+  env,
+  jobs,
+} satisfies Workflow;
 
 // const h = {
 //   jobs: {
-//     job_install_deps: {
-//       name: 'Install Dependencies',
-//       needs: 'job_get_metadata',
-//       'runs-on': 'ubuntu-20.04',
-//       'timeout-minutes': 15,
-//       if: "(needs.job_get_metadata.outputs.is_gitflow_sync == 'false' && needs.job_get_metadata.outputs.has_gitflow_label == 'false')\n",
-//       steps: [
-//         {
-//           name: 'Check out current commit (${{ needs.job_get_metadata.outputs.commit_label }})',
-//           uses: 'actions/checkout@v4',
-//           with: {
-//             ref: '${{ env.HEAD_COMMIT }}',
-//           },
-//         },
-//         {
-//           name: 'Set up Node',
-//           uses: 'actions/setup-node@v4',
-//           with: {
-//             'node-version-file': 'package.json',
-//           },
-//         },
-//         {
-//           name: 'Compute dependency cache key',
-//           id: 'compute_lockfile_hash',
-//           run: 'echo "hash=${{ hashFiles(\'yarn.lock\', \'**/package.json\') }}" >> "$GITHUB_OUTPUT"',
-//         },
-//         {
-//           name: 'Check dependency cache',
-//           uses: 'actions/cache@v4',
-//           id: 'cache_dependencies',
-//           with: {
-//             path: '${{ env.CACHED_DEPENDENCY_PATHS }}',
-//             key: '${{ steps.compute_lockfile_hash.outputs.hash }}',
-//           },
-//         },
-//         {
-//           name: 'Install dependencies',
-//           if: "steps.cache_dependencies.outputs.cache-hit != 'true'",
-//           run: 'yarn install --ignore-engines --frozen-lockfile',
-//         },
-//       ],
-//       outputs: {
-//         dependency_cache_key: '${{ steps.compute_lockfile_hash.outputs.hash }}',
-//       },
-//     },
-//     job_check_branches: {
-//       name: 'Check PR branches',
-//       needs: 'job_get_metadata',
-//       'runs-on': 'ubuntu-20.04',
-//       if: "github.event_name == 'pull_request'",
-//       permissions: {
-//         'pull-requests': 'write',
-//       },
-//       steps: [
-//         {
-//           name: 'PR is opened against master',
-//           uses: 'mshick/add-pr-comment@dd126dd8c253650d181ad9538d8b4fa218fc31e8',
-//           if: "${{ github.base_ref == 'master' && !startsWith(github.head_ref, 'prepare-release/') }}",
-//           with: {
-//             message: '⚠️ This PR is opened against **master**. You probably want to open it against **develop**.\n',
-//           },
-//         },
-//       ],
-//     },
-//     job_build: {
-//       name: 'Build',
-//       needs: ['job_get_metadata', 'job_install_deps'],
-//       'runs-on': 'ubuntu-20.04-large-js',
-//       'timeout-minutes': 30,
-//       if: "(needs.job_get_metadata.outputs.changed_any_code == 'true' || github.event_name != 'pull_request')\n",
-//       steps: [
-//         {
-//           name: 'Check out current commit (${{ needs.job_get_metadata.outputs.commit_label }})',
-//           uses: 'actions/checkout@v4',
-//           with: {
-//             ref: '${{ env.HEAD_COMMIT }}',
-//           },
-//         },
-//         {
-//           name: 'Set up Node',
-//           uses: 'actions/setup-node@v4',
-//           with: {
-//             'node-version-file': 'package.json',
-//           },
-//         },
-//         {
-//           name: 'Check dependency cache',
-//           uses: 'actions/cache/restore@v4',
-//           with: {
-//             path: '${{ env.CACHED_DEPENDENCY_PATHS }}',
-//             key: '${{ needs.job_install_deps.outputs.dependency_cache_key }}',
-//             'fail-on-cache-miss': true,
-//           },
-//         },
-//         {
-//           name: 'Check build cache',
-//           uses: 'actions/cache@v4',
-//           id: 'cache_built_packages',
-//           with: {
-//             path: '${{ env.CACHED_BUILD_PATHS }}',
-//             key: '${{ env.BUILD_CACHE_KEY }}',
-//           },
-//         },
-//         {
-//           name: 'NX cache',
-//           uses: 'actions/cache@v4',
-//           if: "needs.job_get_metadata.outputs.is_release == 'false' &&\nneeds.job_get_metadata.outputs.force_skip_cache == 'false'\n",
-//           with: {
-//             path: '.nxcache',
-//             key: 'nx-Linux-${{ github.ref }}-${{ env.HEAD_COMMIT }}',
-//             'restore-keys':
-//               "${{needs.job_get_metadata.outputs.is_develop == 'false' && env.NX_CACHE_RESTORE_KEYS || 'nx-never-restore'}}",
-//           },
-//         },
-//         {
-//           name: 'Build packages',
-//           if: "steps.cache_built_packages.outputs.cache-hit == ''",
-//           run: 'yarn build',
-//         },
-//       ],
-//       outputs: {
-//         dependency_cache_key: '${{ needs.job_install_deps.outputs.dependency_cache_key }}',
-//       },
-//     },
 //     job_size_check: {
 //       name: 'Size Check',
 //       needs: ['job_get_metadata', 'job_build'],
