@@ -1,3 +1,16 @@
+# Upgrading from 7.x to 8.x
+
+## Removal of Severity Enum
+
+In v7 we deprecated the `Severity` enum in favor of using the `SeverityLevel` type. In v8 we removed the `Severity`
+enum. If you were using the `Severity` enum, you should replace it with the `SeverityLevel` type. See
+[below](#severity-severitylevel-and-severitylevels) for code snippet examples
+
+## Removal of the `Offline` integration
+
+The `Offline` integration has been removed in favor of the offline transport wrapper:
+http://docs.sentry.io/platforms/javascript/configuration/transports/#offline-caching
+
 # Deprecations in 7.x
 
 You can use the **Experimental** [@sentry/migr8](https://www.npmjs.com/package/@sentry/migr8) to automatically update
