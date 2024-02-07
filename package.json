@@ -84,6 +84,7 @@
     "packages/wasm",
     "dev-packages/browser-integration-tests",
     "dev-packages/e2e-tests",
+    "dev-packages/github-workflow-generator",
     "dev-packages/node-integration-tests",
     "dev-packages/overhead-metrics",
     "dev-packages/rollup-utils"

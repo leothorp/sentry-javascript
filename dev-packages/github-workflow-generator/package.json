@@ -1,0 +1,21 @@
+{
+  "name": "@sentry-internal/github-workflow-generator",
+  "version": "7.100.0",
+  "license": "MIT",
+  "engines": {
+    "node": ">=10"
+  },
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "fix": "eslint . --format stylish --fix",
+    "lint": "eslint . --format stylish",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "volta": {
+    "extends": "../../package.json"
+  }
+}
