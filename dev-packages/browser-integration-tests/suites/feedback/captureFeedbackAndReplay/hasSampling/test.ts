@@ -53,7 +53,8 @@ sentryTest('should capture feedback (@sentry-internal/feedback import)', async (
 
 
   if (breadcrumbs.length === 0) {
-    console.log(replayReq0, replayReq1);
+    console.log(getReplayEvent(replayReq0), getReplayEvent(replayReq1));
+    console.log(getCustomRecordingEvents(replayReq0), getCustomRecordingEvents(replayReq1));
   }
 
   expect(breadcrumbs).toEqual(
