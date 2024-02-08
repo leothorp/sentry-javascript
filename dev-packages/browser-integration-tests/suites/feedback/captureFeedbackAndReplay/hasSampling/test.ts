@@ -36,20 +36,25 @@ sentryTest('should capture feedback (@sentry-internal/feedback import)', async (
 
   const url = await getLocalTestPath({ testDir: __dirname });
 
-  const [,,replayReq1] = await Promise.all([page.goto(url), page.getByText('Report a Bug').click(), reqPromise0]);
+  const [,,replayReq0] = await Promise.all([page.goto(url), page.getByText('Report a Bug').click(), reqPromise0]);
 
   await page.locator('[name="name"]').fill('Jane Doe');
   await page.locator('[name="email"]').fill('janedoe@example.org');
   await page.locator('[name="message"]').fill('my example feedback');
   await page.getByLabel('Send Bug Report').click();
 
-  const [feedbackResp, replayReq2] = await Promise.all([feedbackRequestPromise, reqPromise1]);
+  const [feedbackResp, replayReq1] = await Promise.all([feedbackRequestPromise, reqPromise1]);
 
   const feedbackEvent = envelopeRequestParser(feedbackResp.request());
-  const replayEvent = getReplayEvent(replayReq1);
+  const replayEvent = getReplayEvent(replayReq0);
   // Feedback breadcrumb is on second segment because we flush when "Report a Bug" is clicked
   // And then the breadcrumb is sent when feedback form is submitted
-  const { breadcrumbs } = getCustomRecordingEvents(replayReq2);
+  const { breadcrumbs } = getCustomRecordingEvents(replayReq1);
+
+
+  if (breadcrumbs.length === 0) {
+    console.log(replayReq0, replayReq1);
+  }
 
   expect(breadcrumbs).toEqual(
     expect.arrayContaining([
