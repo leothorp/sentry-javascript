@@ -11,14 +11,20 @@ enum. If you were using the `Severity` enum, you should replace it with the `Sev
 The `Offline` integration has been removed in favor of the offline transport wrapper:
 http://docs.sentry.io/platforms/javascript/configuration/transports/#offline-caching
 
-## Removal of `Sentry.configureScope`.
+## Removal of `Sentry.configureScope` (#10565)
 
 The top level `Sentry.configureScope` function has been removed. Instead, you should use the `Sentry.getCurrentScope()`
 to access and mutate the current scope.
 
-## Other changes
+## Deletion of `@sentry/hub` package (#10530)
+
+`@sentry/hub` has been removed. All exports from `@sentry.hub` should be available in `@sentry/core`.
+
+## General API Changes
 
 - Remove `spanStatusfromHttpCode` in favour of `getSpanStatusFromHttpCode` (#10361)
+- Remove deprecated `deepReadDirSync` export from `@sentry/node` (#10564)
+- Remove `_eventFromIncompleteOnError` usage (#10553)
 
 # Deprecations in 7.x
 
