@@ -129,7 +129,7 @@ export function createWidget({
   /**
    * Internal handler when dialog is opened
    */
-  function handleOpenDialog({includeReplay}: {includeReplay?: boolean} = {}) {
+  function handleOpenDialog({ includeReplay }: { includeReplay?: boolean } = {}) {
     // Flush replay if it exists
     if (includeReplay) {
       const client = getClient();
@@ -138,8 +138,8 @@ export function createWidget({
         return;
       }
       try {
-      // @ts-expect-error Not sure how best to type this w/o
-      // making @sentry/replay a dep
+        // @ts-expect-error Not sure how best to type this w/o
+        // making @sentry/replay a dep
         void replay.flush();
       } catch (err) {
         DEBUG_BUILD && logger.error(err);
@@ -179,7 +179,7 @@ export function createWidget({
         if (options.onFormOpen) {
           options.onFormOpen();
         }
-        handleOpenDialog({includeReplay: options.includeReplay});
+        handleOpenDialog({ includeReplay: options.includeReplay });
         return;
       }
 
@@ -232,7 +232,7 @@ export function createWidget({
       if (options.onFormOpen) {
         options.onFormOpen();
       }
-      handleOpenDialog({includeReplay: options.includeReplay});
+      handleOpenDialog({ includeReplay: options.includeReplay });
     } catch (err) {
       // TODO: Error handling?
       logger.error(err);

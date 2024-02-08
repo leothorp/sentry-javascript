@@ -36,10 +36,7 @@ sentryTest('should capture feedback (@sentry-internal/feedback import)', async (
 
   const url = await getLocalTestPath({ testDir: __dirname });
 
-  await Promise.all([
-    page.goto(url),
-    page.getByText('Report a Bug').click(),
-  ]);
+  await Promise.all([page.goto(url), page.getByText('Report a Bug').click()]);
 
   await page.locator('[name="name"]').fill('Jane Doe');
   await page.locator('[name="email"]').fill('janedoe@example.org');
