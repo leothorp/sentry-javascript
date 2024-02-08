@@ -41,9 +41,8 @@ sentryTest('should capture feedback (@sentry-internal/feedback import)', async (
   await page.locator('[name="name"]').fill('Jane Doe');
   await page.locator('[name="email"]').fill('janedoe@example.org');
   await page.locator('[name="message"]').fill('my example feedback');
-  await page.getByLabel('Send Bug Report').click();
 
-  const [feedbackResp, replayReq1] = await Promise.all([feedbackRequestPromise, reqPromise1]);
+  const [,feedbackResp, replayReq1] = await Promise.all([page.getByLabel('Send Bug Report').click(), feedbackRequestPromise, reqPromise1]);
 
   const feedbackEvent = envelopeRequestParser(feedbackResp.request());
   const replayEvent = getReplayEvent(replayReq0);
