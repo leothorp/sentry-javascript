@@ -1,8 +1,8 @@
 import { expect } from '@playwright/test';
 
-import { sentryTest } from '../../../utils/fixtures';
-import { envelopeRequestParser, getEnvelopeType } from '../../../utils/helpers';
-import { getCustomRecordingEvents, getReplayEvent, waitForReplayRequest } from '../../../utils/replayHelpers';
+import { sentryTest } from '../../../../utils/fixtures';
+import { envelopeRequestParser, getEnvelopeType } from '../../../../utils/helpers';
+import { getCustomRecordingEvents, getReplayEvent, waitForReplayRequest } from '../../../../utils/replayHelpers';
 
 sentryTest('should capture feedback (@sentry-internal/feedback import)', async ({ getLocalTestPath, page }) => {
   if (process.env.PW_BUNDLE) {
@@ -10,6 +10,7 @@ sentryTest('should capture feedback (@sentry-internal/feedback import)', async (
   }
 
   const reqPromise0 = waitForReplayRequest(page, 0);
+  const reqPromise1 = waitForReplayRequest(page, 1);
   const feedbackRequestPromise = page.waitForResponse(res => {
     const req = res.request();
 
@@ -35,18 +36,23 @@ sentryTest('should capture feedback (@sentry-internal/feedback import)', async (
 
   const url = await getLocalTestPath({ testDir: __dirname });
 
-  await page.goto(url);
-  await page.getByText('Report a Bug').click();
+  await Promise.all([
+    page.goto(url),
+    page.getByText('Report a Bug').click(),
+  ]);
+
   await page.locator('[name="name"]').fill('Jane Doe');
   await page.locator('[name="email"]').fill('janedoe@example.org');
   await page.locator('[name="message"]').fill('my example feedback');
   await page.getByLabel('Send Bug Report').click();
 
-  const [feedbackResp, replayReq] = await Promise.all([feedbackRequestPromise, reqPromise0]);
+  const [feedbackResp, replayReq1, replayReq2] = await Promise.all([feedbackRequestPromise, reqPromise0, reqPromise1]);
 
   const feedbackEvent = envelopeRequestParser(feedbackResp.request());
-  const replayEvent = getReplayEvent(replayReq);
-  const { breadcrumbs } = getCustomRecordingEvents(replayReq);
+  const replayEvent = getReplayEvent(replayReq1);
+  // Feedback breadcrumb is on second segment because we flush when "Report a Bug" is clicked
+  // And then the breadcrumb is sent when feedback form is submitted
+  const { breadcrumbs } = getCustomRecordingEvents(replayReq2);
 
   expect(breadcrumbs).toEqual(
     expect.arrayContaining([
