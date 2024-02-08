@@ -56,6 +56,8 @@ sentryTest('should capture feedback (@sentry-internal/feedback import)', async (
       {
         category: 'sentry.feedback',
         data: { feedbackId: expect.any(String) },
+        timestamp: expect.any(Number),
+        type: 'default',
       },
     ]),
   );
